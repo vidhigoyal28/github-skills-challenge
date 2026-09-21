@@ -93,6 +93,56 @@ The completed pipeline was verified in the following order:
 The end-to-end result was successful: `Operational Data -> Anomaly Detection ->
 Event -> Producer -> Topic -> Consumer -> AIOps`.
 
+## Reproduction Steps
+
+From the repository root, run:
+
+```bash
+python3 -m pip install -r requirements.txt
+python3 -m pytest
+python3 src/aiops_pipeline.py
+```
+
+To trace each event-processing stage, run the pipeline with the source directory
+on the import path:
+
+```bash
+PYTHONPATH=src python3 - <<'PY'
+import json
+from anomaly_detector import AnomalyDetector
+from event_consumer import EventConsumer
+from event_producer import EventProducer
+from event_topic import EventTopic
+
+with open("data/service_data.json", encoding="utf-8") as file:
+	records = json.load(file)
+
+topic = EventTopic("service-events")
+detector = AnomalyDetector()
+producer = EventProducer(topic)
+consumer = EventConsumer(topic)
+
+detected = []
+for record in records:
+	event = detector.detect(record)
+	if event:
+		detected.append(event)
+
+for event in detected:
+	producer.publish(event)
+
+consumed = consumer.consume()
+print("Records:", len(records))
+print("Detected:", len(detected))
+print("Published:", len(topic.get_messages()))
+print("Consumed:", len(consumed))
+print("Processed successfully:", consumed == detected)
+PY
+```
+
+The expected result is 10 records processed, 2 anomalies detected, 2 events
+published, 2 events consumed, and `Processed successfully: True`.
+
 
 ---
 

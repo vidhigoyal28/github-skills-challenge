@@ -43,6 +43,26 @@ log rule only recognizes `WARNING`. This is an expected detection limitation:
 the log rule should also consider `ERROR` events, and the fixed thresholds
 could be supplemented with service baselines or trend-based detection.
 
+## Task 4 Event Flow Verification
+
+The event workflow was first run with the original wiring. The detector found
+2 anomalies, but the consumer received 0 events because it was connected to a
+different topic than the producer.
+
+The pipeline was corrected so the producer and consumer share the same
+`service-events` topic. The verified flow is:
+
+1. The detector creates an anomaly event from abnormal operational data.
+2. The producer publishes the event to the topic.
+3. The topic stores the event message.
+4. The consumer reads the event from that topic.
+5. The pipeline prints the consumed event as downstream AIOps output.
+
+The final execution processed 10 records, detected 2 anomalies, and consumed 2
+events. The producer publishes messages, the topic stores and returns messages,
+the consumer reads messages, and each event contains the service, timestamp,
+event type, reasons, and source record.
+
 
 ---
 

@@ -37,10 +37,8 @@ records as normal and detected 2 anomalies:
 	`ERROR` log with the message `Database connection timeout`.
 
 The remaining 8 records had normal metric values and `INFO` logs, so none were
-incorrectly flagged. Both concerning `ERROR` log events were present in
-anomalous records, but the detector did not report them as reasons because its
-log rule only recognizes `WARNING`. This is an expected detection limitation:
-the log rule should also consider `ERROR` events, and the fixed thresholds
+incorrectly flagged. The detector now reports both concerning `ERROR` log
+events as anomaly reasons. A remaining limitation is that the fixed thresholds
 could be supplemented with service baselines or trend-based detection.
 
 ## Task 4 Event Flow Verification
@@ -62,6 +60,22 @@ The final execution processed 10 records, detected 2 anomalies, and consumed 2
 events. The producer publishes messages, the topic stores and returns messages,
 the consumer reads messages, and each event contains the service, timestamp,
 event type, reasons, and source record.
+
+## Task 5 Workflow Troubleshooting
+
+Two workflow problems were identified and corrected:
+
+- `src/anomaly_detector.py`: the log rule checked only `WARNING`, so the
+	supplied `ERROR` records were missing the log reason. The rule now recognizes
+	both `WARNING` and `ERROR`; the pipeline output confirms `Error log detected`
+	for both anomalies.
+- `src/aiops_pipeline.py`: the consumer originally used a separate topic from
+	the producer, so no events were consumed. The consumer now uses the
+	producer's `service-events` topic, and the pipeline verifies 2 events
+	consumed from 2 anomalies.
+
+The existing producer, topic, consumer, and event structures were preserved.
+Focused pipeline tests and the complete test suite pass after both corrections.
 
 
 ---

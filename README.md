@@ -11,6 +11,19 @@ Make sure your work is committed and pushed to your repository before submission
 
 Good luck!
 
+#Scenario
+This project monitors a service using operational data such as response time,
+error rate, CPU usage, and request volume.
+
+The operational problem is identifying abnormal service behavior early,
+especially conditions that may indicate performance degradation, elevated
+errors,
+or an approaching service outage.
+
+AIOps is used in this assessment to analyze operational data, detect anomalies,
+generate events, and pass those events through a producer, topic, and consumer
+workflow for further processing.
+
 
 ---
 

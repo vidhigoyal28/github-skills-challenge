@@ -77,6 +77,22 @@ Two workflow problems were identified and corrected:
 The existing producer, topic, consumer, and event structures were preserved.
 Focused pipeline tests and the complete test suite pass after both corrections.
 
+## Task 6 End-to-End Execution
+
+The completed pipeline was verified in the following order:
+
+1. 10 operational records were processed.
+2. 2 anomalous observations were detected.
+3. 2 anomaly events were generated.
+4. The producer published 2 events to `service-events`.
+5. The consumer received 2 events from the topic.
+6. The consumed events matched the generated events.
+7. The final output identified the `payment-service` timeout and resource
+	utilization issues at `10:05` and `10:06`.
+
+The end-to-end result was successful: `Operational Data -> Anomaly Detection ->
+Event -> Producer -> Topic -> Consumer -> AIOps`.
+
 
 ---
 
